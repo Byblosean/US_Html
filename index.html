@@ -1,133 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bug Tracker UI</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f6fa;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 40px;
-      align-items: center;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      padding: 30px;
-      width: 400px;
-    }
-
-    .form-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      width: 120px;
-      font-weight: bold;
-      color: #34495e;
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    button {
-      background: #3498db;
-      color: #fff;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: #2980b9;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Tracker UI</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+  }
+  .card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    width: 400px;
+    display: none;
+  }
+  .card.active {
+    display: block;
+  }
+  h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  label {
+    display: inline-block;
+    width: 100px;
+    margin-bottom: 10px;
+    vertical-align: top;
+  }
+  input, select, textarea {
+    width: 260px;
+    padding: 7px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+  button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #6c63ff;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #5848c2;
+  }
+  .tab-buttons {
+    margin-bottom: 15px;
+  }
+  .tab-buttons button {
+    background-color: #eee;
+    color: #333;
+  }
+  .tab-buttons button.active {
+    background-color: #6c63ff;
+    color: white;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+</style>
 </head>
 <body>
 
-  <!-- Login -->
-  <div class="card">
-    <h2>Login</h2>
-    <div class="form-group">
-      <label for="login-username">User Name:</label>
-      <input type="text" id="login-username" name="username">
-    </div>
-    <div class="form-group">
-      <label for="login-password">Password:</label>
-      <input type="password" id="login-password" name="password">
-    </div>
-    <div class="form-group">
-      <label></label>
-      <input type="checkbox" id="remember">
-      <label for="remember">Remember account</label>
-    </div>
-    <button type="button">Login</button>
+<!-- Login Window -->
+<div id="login" class="card active">
+  <h2>Login</h2>
+  <div>
+    <label>User Name:</label>
+    <input type="text" placeholder="Enter username">
   </div>
+  <div>
+    <label>Password:</label>
+    <input type="password" placeholder="Enter password">
+  </div>
+  <button onclick="showWindow('report')">Login</button>
+  <button onclick="showWindow('account')">Create Account</button>
+</div>
 
-  <!-- Create Report -->
-  <div class="card">
-    <h2>Create Report</h2>
-    <div class="form-group">
-      <label for="report-title">Title:</label>
-      <input type="text" id="report-title" name="report-title">
+<!-- Create Account Window -->
+<div id="account" class="card">
+  <h2>Create Account</h2>
+  <div>
+    <label>User Name:</label>
+    <input type="text" placeholder="Enter username">
+  </div>
+  <div>
+    <label>Password:</label>
+    <input type="password" placeholder="Enter password">
+  </div>
+  <div>
+    <label>Confirm Password:</label>
+    <input type="password" placeholder="Confirm password">
+  </div>
+  <button onclick="showWindow('login')">Back to Login</button>
+  <button>Create Account</button>
+</div>
+
+<!-- Create Report Window -->
+<div id="report" class="card">
+  <h2>Create Report</h2>
+  <div class="tab-buttons">
+    <button class="active" onclick="showTab('details', this)">Details</button>
+    <button onclick="showTab('comments', this)">Comments</button>
+  </div>
+  <div id="details" class="tab-content active">
+    <div>
+      <label>Summary:</label>
+      <input type="text">
     </div>
-    <div class="form-group">
-      <label for="report-status">Status:</label>
-      <select id="report-status" name="report-status">
-        <option value="new" selected>New</option>
-        <option value="inprogress">In Progress</option>
-        <option value="done">Done</option>
+    <div>
+      <label>Project:</label>
+      <select>
+        <option value="">Select</option>
+        <option>Start_Up</option>
+        <option>Testing_Project</option>
       </select>
     </div>
-    <div class="form-group">
-      <label for="due-date">Due Date:</label>
-      <input type="date" id="due-date" name="due-date">
+    <div>
+      <label>Issue Type:</label>
+      <select>
+        <option value="">Select</option>
+        <option>Bug</option>
+        <option>Task</option>
+      </select>
     </div>
-    <div class="form-group">
-      <label for="comments">Comments:</label>
-      <textarea id="comments" rows="4"></textarea>
+    <div>
+      <label>Priority:</label>
+      <select>
+        <option value="">Select</option>
+        <option>Critical</option>
+        <option>Major</option>
+        <option>Medium</option>
+        <option>Low</option>
+      </select>
     </div>
-    <button type="button">Submit Report</button>
+    <div>
+      <label>Affect Version:</label>
+      <input type="text">
+    </div>
+    <div>
+      <label>Fixed Version:</label>
+      <input type="text">
+    </div>
+    <div>
+      <label>Due Date:</label>
+      <input type="date">
+    </div>
+    <div>
+      <label>Assignee:</label>
+      <select>
+        <option value="">Select</option>
+        <option>User1</option>
+        <option>User2</option>
+      </select>
+    </div>
+    <div>
+      <button onclick="showWindow('login')">Close</button>
+      <button>Save Report</button>
+    </div>
   </div>
+  <div id="comments" class="tab-content">
+    <div>
+      <label>Comment:</label>
+      <textarea rows="4"></textarea>
+    </div>
+    <div>
+      <button onclick="showTab('details', document.querySelector('.tab-buttons button'))">Back to Details</button>
+      <button>Add Comment</button>
+    </div>
+  </div>
+</div>
 
-  <!-- Create Account -->
-  <div class="card">
-    <h2>Create Account</h2>
-    <div class="form-group">
-      <label for="ca-username">User Name:</label>
-      <input type="text" id="ca-username" name="ca-username">
-    </div>
-    <div class="form-group">
-      <label for="ca-password">Password:</label>
-      <input type="password" id="ca-password" name="ca-password">
-    </div>
-    <div class="form-group">
-      <label for="ca-confirm">Confirm:</label>
-      <input type="password" id="ca-confirm" name="ca-confirm">
-    </div>
-    <button type="button">Create Account</button>
-  </div>
+<script>
+function showWindow(id) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+</script>
 
 </body>
 </html>

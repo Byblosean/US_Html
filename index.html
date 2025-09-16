@@ -1,304 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bug Tracker UI</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bug Tracker</title>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background: #f5f5f5;
+  :root{
+    --bg:#0e1116; --panel:#141922; --panel-2:#111620; --ink:#e7ebf3; --muted:#9aa3b2;
+    --accent:#6f6cff; --accent-600:#5451e6; --border:#202635; --err:#ef4444; --ok:#22c55e;
   }
+  *{box-sizing:border-box}
+  body{margin:0; font:14px "Segoe UI", Inter, system-ui, Arial; color:var(--ink); background:var(--bg);}
 
-  /* Tabs buttons */
-  .tabs {
-    display: flex;
-    background: #444;
-  }
-  .tabs button {
-    flex: 1;
-    padding: 12px;
-    color: #fff;
-    background: #444;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  .tabs button.active {
-    background: #666;
-  }
+  /* Nav */
+  .nav{display:flex; gap:8px; padding:14px; justify-content:center; background:#0b0f15; border-bottom:1px solid var(--border)}
+  .nav button{border:1px solid var(--border); background:#141922; padding:10px 16px; border-radius:10px; cursor:pointer; font-weight:600; color:var(--ink)}
+  .nav button.active{border-color:var(--accent); background:#1a2030}
 
-  /* Main container */
-  .container {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-  }
+  /* Layout */
+  .wrap{display:flex; justify-content:center; padding:22px}
+  .window{display:none; background:#141922; border:1px solid var(--border); border-radius:12px; box-shadow:0 12px 28px rgba(0,0,0,.35)}
+  .window.active{display:block}
+  .window--login{width:520px; max-width:94vw}
+  .window--account{width:560px; max-width:94vw}
+  .window--report{width:980px; max-width:96vw}
 
-  /* Card style for windows */
-  .window {
-    background: #fff;
-    padding: 20px;
-    width: 900px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    border-radius: 8px;
-    display: none;
-  }
-  .window.active {
-    display: block;
-  }
+  .title{padding:14px 18px; border-bottom:1px solid var(--border); font-weight:700; background:#111620}
+  .section{padding:18px}
 
-  /* Login form */
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: auto;
-  }
-  .login-form label {
-    margin: 10px 0 4px 0;
-  }
-  .login-form input[type="text"],
-  .login-form input[type="password"] {
-    padding: 8px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .login-form .options {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0;
-  }
-  .login-form button {
-    padding: 10px;
-    font-size: 14px;
-    margin-top: 8px;
-    cursor: pointer;
-  }
+  .row{display:flex; gap:16px; align-items:center; margin-bottom:12px}
+  .row label{min-width:140px; text-align:right; font-weight:600; color:#cfd6e6}
+  .row .field{flex:1}
 
-  /* Create Report layout */
-  .report-layout {
-    display: flex;
-    flex-direction: column;
+  input[type="text"],input[type="password"],input[type="date"],select,textarea{
+    width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:8px;
+    background:#0e1522; color:var(--ink); outline:none;
   }
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .summary-row label {
-    width: 100px;
-    font-weight: bold;
-  }
-  .summary-row input {
-    flex: 1;
-    padding: 6px;
-  }
+  textarea{resize:vertical}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(111,108,255,.15)}
+  input[readonly],textarea[readonly]{background:#0c1220}
 
-  .tabs-content {
-    display: flex;
-    gap: 20px;
-  }
+  .actions{display:flex; gap:10px; justify-content:flex-end; padding-top:6px}
+  .btn{border:0; border-radius:8px; padding:10px 16px; font-weight:700; cursor:pointer; color:#fff; background:var(--accent)}
+  .btn:hover{background:var(--accent-600)}
+  .btn.secondary{background:#2a3142; color:#dfe4f5}
+  .btn:disabled{opacity:.6; cursor:not-allowed}
 
-  .details, .comments {
-    flex: 1;
-  }
+  /* Tabs */
+  .tabs{display:flex; gap:6px; padding:0 18px}
+  .tab{padding:8px 12px; border:1px solid var(--border); border-bottom:none; background:#101624; cursor:pointer; border-radius:8px 8px 0 0; font-weight:600; color:#c9d2e6}
+  .tab.active{background:#141922; border-color:var(--accent)}
+  .panel{display:none; border-top:1px solid var(--border); padding:16px 18px}
+  .panel.active{display:block}
 
-  .details-left, .details-right {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
 
-  .details-left label, .details-right label {
-    font-weight: bold;
-  }
-  .details-left input, .details-left select,
-  .details-right input {
-    padding: 6px;
-    margin-top: 2px;
-    margin-bottom: 6px;
-  }
+  .error{color:var(--err); font-size:12px; margin-top:6px; display:none}
+  .hint{color:var(--muted); font-size:12px; margin-top:6px}
+  .invalid{border-color:var(--err)!important; box-shadow:0 0 0 3px rgba(239,68,68,.12)!important}
+  .valid{border-color:var(--ok)!important; box-shadow:0 0 0 3px rgba(34,197,94,.12)!important}
 
-  .description {
-    margin-top: 10px;
-  }
-  .description textarea {
-    width: 100%;
-    height: 120px;
-    padding: 6px;
-  }
-
-  .comments textarea {
-    width: 100%;
-    height: 80px;
-    margin-bottom: 10px;
-  }
-  .all-comments textarea {
-    width: 100%;
-    height: 120px;
-  }
-
-  .report-buttons {
-    margin-top: 10px;
-  }
-  .report-buttons button {
-    padding: 8px 16px;
-    margin-right: 10px;
-  }
+  .req::after{content:" *"; color:var(--err)}
 </style>
 </head>
 <body>
 
-<div class="tabs">
-  <button class="tab-btn active" onclick="showWindow('loginWindow')">Login</button>
-  <button class="tab-btn" onclick="showWindow('createReportWindow')">Create Report</button>
+<!-- NAV -->
+<div class="nav">
+  <button class="navbtn active" onclick="showWin('login',0)" title="Login">Login</button>
+  <button class="navbtn" onclick="showWin('report',1)" title="Create Report">Create Report</button>
+  <button class="navbtn" onclick="showWin('account',2)" title="Create Account">Create Account</button>
 </div>
 
-<div class="container">
-
-  <!-- Login Window -->
-  <div class="window active" id="loginWindow">
-    <form class="login-form">
-      <label for="username">User Name:</label>
-      <input type="text" id="username">
-
-      <label for="password">Password:</label>
-      <input type="password" id="password">
-
-      <div class="options">
-        <label><input type="checkbox"> Keep me signed in</label>
-      </div>
-
-      <div class="report-buttons">
-        <button type="button">Login</button>
-        <button type="button">Cancel</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Create Report Window -->
-  <div class="window" id="createReportWindow">
-    <div class="report-layout">
-
-      <!-- Summary row -->
-      <div class="summary-row">
-        <label for="summary">Summary:</label>
-        <input type="text" id="summary" value="Summary goes here">
-      </div>
-
-      <!-- Tabs for Details/Comments -->
-      <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('details')">Details</button>
-        <button class="tab-btn" onclick="showTab('comments')">Comments</button>
-      </div>
-
-      <div class="tabs-content">
-        <!-- Details tab -->
-        <div class="details tab-content active" id="details">
-          <div style="display:flex; gap:20px;">
-            <!-- Left side fields -->
-            <div class="details-left">
-              <label>Project:</label>
-              <select>
-                <option>Start_Up</option>
-              </select>
-
-              <label>Issue Type:</label>
-              <select>
-                <option>Select</option>
-              </select>
-
-              <label>Priority:</label>
-              <select>
-                <option>Select</option>
-              </select>
-
-              <label>Affect Version:</label>
-              <input type="text" value="1232">
-
-              <label>Fixed Version:</label>
-              <input type="text" value="2123">
-
-              <label>Due Date:</label>
-              <input type="date">
-            </div>
-
-            <!-- Right side fields -->
-            <div class="details-right">
-              <label>Reporter:</label>
-              <input type="text">
-
-              <label>Assignee:</label>
-              <input type="text">
-
-              <label>Severity:</label>
-              <input type="text">
-
-              <label>Environment:</label>
-              <input type="text">
-
-              <label>Status:</label>
-              <input type="text" value="New">
-            </div>
-          </div>
-
-          <!-- Description field -->
-          <div class="description">
-            <label>Description:</label>
-            <textarea></textarea>
-          </div>
-
-          <!-- Buttons -->
-          <div class="report-buttons">
-            <button type="button">Save Report</button>
-            <button type="button">Close</button>
-          </div>
-        </div>
-
-        <!-- Comments tab -->
-        <div class="comments tab-content" id="comments">
-          <label>Comment:</label>
-          <textarea></textarea>
-
-          <label>All Comments:</label>
-          <div class="all-comments">
-            <textarea readonly></textarea>
-          </div>
-
-          <div class="report-buttons">
-            <button type="button">Add Comment</button>
-          </div>
+<div class="wrap">
+  <!-- LOGIN (ЮС1.1) -->
+  <div id="login" class="window window--login active" aria-labelledby="loginTitle">
+    <div class="title" id="loginTitle">Login to Bug Tracker</div>
+    <div class="section">
+      <div class="row">
+        <label for="u" class="req">User Name</label>
+        <div class="field">
+          <input id="u" type="text" placeholder="Enter username"/>
+          <div id="uErr" class="error">This field is required or too short.</div>
         </div>
       </div>
 
+      <div class="row">
+        <label for="p" class="req">Password</label>
+        <div class="field">
+          <input id="p" type="password" placeholder="Enter password"/>
+          <div id="pErr" class="error">This field is required or too short.</div>
+        </div>
+      </div>
+
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0 2px 156px;color:#9aa3b2">
+        <input id="remember" type="checkbox" title="Keep me signed in"/>
+        Keep me signed in
+      </label>
+
+      <div class="actions">
+        <button id="loginBtn" class="btn" disabled title="Login">Login</button>
+        <button class="btn secondary" type="button" onclick="resetLogin()" title="Cancel">Cancel</button>
+      </div>
     </div>
   </div>
 
+  <!-- CREATE REPORT (ЮС1.3) -->
+  <div id="report" class="window window--report" aria-labelledby="createTitle">
+    <div class="title" id="createTitle">Create Report</div>
+
+    <div class="section">
+      <div class="row">
+        <label for="summary" class="req">Summary</label>
+        <div class="field">
+          <input id="summary" type="text" placeholder="Short, meaningful summary"/>
+          <div id="sErr" class="error">This field is required or too short.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab(this,'details')" title="Details">Details</div>
+      <div class="tab" onclick="switchTab(this,'comments')" title="Comments">Comments</div>
+    </div>
+
+    <!-- DETAILS -->
+    <div id="details" class="panel active">
+      <div class="grid2">
+        <div>
+          <label for="project" class="req">Project</label>
+          <select id="project" title="Project">
+            <option value="" selected hidden></option>
+            <option>Start_Up</option>
+            <option>Testing_Project</option>
+          </select>
+          <div id="projectErr" class="error">Please select a project.</div>
+
+          <label for="issueType" class="req">Issue Type</label>
+          <select id="issueType" title="Issue Type">
+            <option value="" selected hidden></option>
+            <option>Bug</option>
+            <option>Task</option>
+          </select>
+          <div id="issueTypeErr" class="error">Please select an issue type.</div>
+
+          <label for="priority" class="req">Priority</label>
+          <select id="priority" title="Priority">
+            <option value="" selected hidden></option>
+            <option>Critical</option>
+            <option>Major</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+          <div id="priorityErr" class="error">Please select a priority.</div>
+
+          <label for="affVer">Affect Version</label>
+          <input id="affVer" type="text" placeholder="e.g., 1.2.3"/>
+
+          <label for="fixVer">Fixed Version</label>
+          <input id="fixVer" type="text" placeholder="e.g., 1.2.4"/>
+
+          <label for="due">Due Date</label>
+          <input id="due" type="date" title="Pick any date"/>
+        </div>
+
+        <div>
+          <label for="reporter">Reporter</label>
+          <input id="reporter" type="text" value="TestAdmin" readonly/>
+
+          <label for="assignee" class="req">Assignee</label>
+          <select id="assignee" title="Assignee">
+            <option value="" selected hidden></option>
+            <option>TestAdmin</option>
+            <option>QA_User</option>
+            <option>Dev_User</option>
+          </select>
+          <div id="assigneeErr" class="error">Please select an assignee.</div>
+
+          <label for="severity">Severity</label>
+          <select id="severity" title="Severity (optional)">
+            <option value="" selected hidden></option>
+            <option>Critical</option>
+            <option>Major</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+
+          <label for="environment" class="req">Environment</label>
+          <select id="environment" title="Environment">
+            <option value="" selected hidden></option>
+            <option>SIT</option>
+            <option>UAT</option>
+            <option>PDN</option>
+          </select>
+          <div id="environmentErr" class="error">Please select an environment.</div>
+
+          <label for="status">Status</label>
+          <input id="status" type="text" value="New" readonly/>
+        </div>
+      </div>
+
+      <label for="desc" style="margin-top:8px; display:block;">Description</label>
+      <textarea id="desc" rows="6" placeholder="Optional details..."></textarea>
+
+      <div class="actions">
+        <button id="saveBtn" class="btn" type="button" title="Save Report">Save Report</button>
+        <button class="btn secondary" type="button" onclick="clearCreate()" title="Close">Close</button>
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div id="comments" class="panel">
+      <div class="grid2">
+        <div>
+          <label for="comment">Comment</label>
+          <textarea id="comment" rows="8" placeholder="Type a comment..."></textarea>
+        </div>
+        <div>
+          <label for="allComments">All Comments</label>
+          <textarea id="allComments" rows="8" readonly></textarea>
+        </div>
+      </div>
+      <div class="actions" style="justify-content:center">
+        <button id="addComment" class="btn" type="button" disabled title="Add Comment">Add Comment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE ACCOUNT (ЮС1.5) -->
+  <div id="account" class="window window--account" aria-labelledby="accountTitle">
+    <div class="title" id="accountTitle">Create Account</div>
+    <div class="section">
+      <div class="row">
+        <label for="regUser" class="req">User Name</label>
+        <div class="field">
+          <input id="regUser" type="text" placeholder="Choose a username"
+                 title="First character must be a letter; allowed: letters, numbers, '_', '-'"/>
+          <div id="regUserErr" class="error">Invalid username format or too short.</div>
+          <div id="regUserHint" class="hint">Must start with a letter; allowed characters: letters, numbers, “_”, “-”.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="regPass" class="req">Password</label>
+        <div class="field">
+          <input id="regPass" type="password" placeholder="Create a password"
+                 title="Should include lower & upper case letters, a number and a special character"/>
+          <div id="regPassErr" class="error">Password is too weak or too short.</div>
+          <div id="regPassHint" class="hint">Include lowercase, UPPERCASE, a number and a special character (!@#$%^&+=).</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label for="regConfirm" class="req">Confirm Password</label>
+        <div class="field">
+          <input id="regConfirm" type="password" placeholder="Repeat password"/>
+          <div id="regConfirmErr" class="error">Passwords do not match or missing.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="createBtn" class="btn" type="button" title="Create Account" disabled>Create Account</button>
+        <button class="btn secondary" type="button" onclick="resetAccount()" title="Cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  function showWindow(windowId) {
-    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
-    document.getElementById(windowId).classList.add('active');
+  /* ------------- nav & tabs ------------- */
+  function showWin(id, idx){
+    document.querySelectorAll('.window').forEach(w=>w.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.navbtn').forEach((b,i)=>b.classList.toggle('active', i===idx));
+  }
+  function switchTab(btn, id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+  const $ = s => document.querySelector(s);
 
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    if(windowId === 'loginWindow') document.querySelector('.tabs button').classList.add('active');
-    else document.querySelectorAll('.tabs button')[1].classList.add('active');
+  /* ------------- helpers ------------- */
+  function lengthState(v, min, max){
+    if(!v || v.trim()==='') return 'required';
+    if(v.length < min) return 'short';
+    if(v.length > max) return 'long';
+    return 'ok';
+  }
+  function setError(el, errEl, state, okMsgEl){
+    if(state==='ok'){ errEl.style.display='none'; el.classList.remove('invalid'); el.classList.add('valid'); if(okMsgEl){okMsgEl.style.display='block'} return; }
+    errEl.style.display='block';
+    el.classList.add('invalid'); el.classList.remove('valid');
+    errEl.textContent = state==='required' ? 'This field is required.'
+                      : state==='short'    ? 'Too short.'
+                      : state==='long'     ? 'Too long.'
+                      : 'Invalid value.';
+    if(okMsgEl){okMsgEl.style.display='none'}
+  }
+  function clearField(el, errEl){ el.value=''; el.classList.remove('invalid','valid'); if(errEl) errEl.style.display='none'; }
+
+  /* ========== ЮС1.1: Login ========== */
+  const u=$('#u'), p=$('#p'), loginBtn=$('#loginBtn');
+  let touchedU=false, touchedP=false;
+  const loginRules = {min:4, max:20};
+
+  function loginValidate(show=false){
+    const sU = lengthState(u.value, loginRules.min, loginRules.max);
+    const sP = lengthState(p.value, loginRules.min, loginRules.max);
+    setError(u, $('#uErr'), (touchedU||show)?sU:'ok');
+    setError(p, $('#pErr'), (touchedP||show)?sP:'ok');
+    const ok = (sU==='ok') && (sP==='ok');
+    loginBtn.disabled = !ok;
+    return ok;
+  }
+  u.addEventListener('input', ()=>loginValidate(false));
+  p.addEventListener('input', ()=>loginValidate(false));
+  u.addEventListener('blur', ()=>{touchedU=true; loginValidate(false);});
+  p.addEventListener('blur', ()=>{touchedP=true; loginValidate(false);});
+  loginBtn.addEventListener('click', ()=>{ if(loginValidate(true)) alert('Login OK'); });
+  function resetLogin(){ clearField(u,$('#uErr')); clearField(p,$('#pErr')); touchedU=false; touchedP=false; loginValidate(false); }
+
+  /* ========== ЮС1.3: Create Report ========== */
+  const touchedCreate = new Set();
+  const summaryRules = {min:4, max:120};
+  function markTouched(id){ touchedCreate.add(id); }
+
+  function validateCreate(show){
+    let ok=true;
+    const s=$('#summary'); const sState = lengthState(s.value, summaryRules.min, summaryRules.max);
+    setError(s, $('#sErr'), (touchedCreate.has('summary')||show)?sState:'ok'); ok &= (sState==='ok');
+
+    [['project','projectErr'],['issueType','issueTypeErr'],['priority','priorityErr'],
+     ['assignee','assigneeErr'],['environment','environmentErr']].forEach(([a,b])=>{
+      const el=$('#'+a), err=$('#'+b);
+      const state = (el.value==='') ? 'required' : 'ok';
+      setError(el, err, (touchedCreate.has(a)||show)?state:'ok');
+      ok &= (state==='ok');
+    });
+
+    if(show) alert(ok ? 'Saved' : 'Fix highlighted fields.');
+    return ok;
+  }
+  ['summary','project','issueType','priority','assignee','environment','due'].forEach(id=>{
+    const el=$('#'+id);
+    el.addEventListener('input', ()=>validateCreate(false));
+    el.addEventListener('blur', ()=>{markTouched(id); validateCreate(false);});
+  });
+  $('#saveBtn').addEventListener('click', ()=>validateCreate(true));
+  function clearCreate(){
+    ['summary','affVer','fixVer','due','desc','project','issueType','priority','assignee','environment'].forEach(id=>{
+      const el=$('#'+id); if(!el) return; el.value=''; el.classList.remove('invalid','valid');
+    });
+    document.querySelectorAll('#report .error').forEach(e=>e.style.display='none');
+    touchedCreate.clear();
   }
 
-  function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
+  /* comments */
+  const comment=$('#comment'), addBtn=$('#addComment'), all=$('#allComments');
+  function toggleAdd(){ addBtn.disabled = comment.value.trim()===''; }
+  comment.addEventListener('input', toggleAdd);
+  addBtn.addEventListener('click', ()=>{
+    const who=$('#reporter').value||'Reporter';
+    const dt=new Date().toLocaleString();
+    const line=`\u27E8Comment has been added by ${who} at ${dt}\u27E9 ${comment.value.trim()}`;
+    all.value = (all.value?all.value+'\n':'') + line;
+    comment.value=''; toggleAdd(); all.scrollTop=all.scrollHeight;
+  });
 
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-    if(tabId === 'details') document.querySelectorAll('.tabs button')[0].classList.add('active');
-    else document.querySelectorAll('.tabs button')[1].classList.add('active');
+  /* ========== ЮС1.5: Create Account (UI + validation) ========== */
+  const regUser=$('#regUser'), regPass=$('#regPass'), regConfirm=$('#regConfirm'), createBtn=$('#createBtn');
+  let touchedRU=false, touchedRP=false, touchedRC=false;
+
+  // username: starts with letter; allowed letters/numbers/_/-
+  const unameRe = /^[A-Za-z][A-Za-z0-9_-]*$/;
+  function validateUsername(v){
+    if(!v || v.trim()==='') return 'required';
+    if(!unameRe.test(v)) return 'invalid';
+    if(v.length<4) return 'short';           // без озвучивания чисел в UI
+    if(v.length>20) return 'long';
+    return 'ok';
   }
+  // password: must include lower, upper, digit, special
+  const hasLower = s=>/[a-z]/.test(s);
+  const hasUpper = s=>/[A-Z]/.test(s);
+  const hasDigit = s=>/[0-9]/.test(s);
+  const hasSpec  = s=>/[!@#$%^&+=]/.test(s);
+  function validatePassword(v){
+    if(!v || v.trim()==='') return 'required';
+    if(v.length<8) return 'short';           // мягкий минимум, без чисел в сообщении
+    if(v.length>64) return 'long';
+    if(!(hasLower(v)&&hasUpper(v)&&hasDigit(v)&&hasSpec(v))) return 'weak';
+    return 'ok';
+  }
+  function validateConfirm(p, c){
+    if(!c || c.trim()==='') return 'required';
+    if(p!==c) return 'mismatch';
+    return 'ok';
+  }
+
+  function applyMsg(el, errEl, state, map){
+    if(state==='ok'){ errEl.style.display='none'; el.classList.remove('invalid'); el.classList.add('valid'); return; }
+    el.classList.add('invalid'); el.classList.remove('valid');
+    errEl.style.display='block'; errEl.textContent = map[state] || 'Invalid value.';
+  }
+
+  function accountValidate(show=false){
+    const sU = validateUsername(regUser.value);
+    const sP = validatePassword(regPass.value);
+    const sC = validateConfirm(regPass.value, regConfirm.value);
+
+    applyMsg(regUser, $('#regUserErr'), (touchedRU||show)?sU:'ok', {
+      required:'This field is required.',
+      invalid:'Must start with a letter; allowed: letters, numbers, "_", "-".',
+      short:'Too short.',
+      long:'Too long.'
+    });
+    applyMsg(regPass, $('#regPassErr'), (touchedRP||show)?sP:'ok', {
+      required:'This field is required.',
+      short:'Too short.',
+      long:'Too long.',
+      weak:'Password is too weak.'
+    });
+    applyMsg(regConfirm, $('#regConfirmErr'), (touchedRC||show)?sC:'ok', {
+      required:'This field is required.',
+      mismatch:'Passwords do not match.'
+    });
+
+    const ok = (sU==='ok' && sP==='ok' && sC==='ok');
+    createBtn.disabled = !ok;
+    return ok;
+  }
+
+  regUser.addEventListener('input', ()=>accountValidate(false));
+  regPass.addEventListener('input', ()=>accountValidate(false));
+  regConfirm.addEventListener('input', ()=>accountValidate(false));
+  regUser.addEventListener('blur', ()=>{touchedRU=true; accountValidate(false);});
+  regPass.addEventListener('blur', ()=>{touchedRP=true; accountValidate(false);});
+  regConfirm.addEventListener('blur', ()=>{touchedRC=true; accountValidate(false);});
+
+  createBtn.addEventListener('click', ()=>{
+    if(accountValidate(true)) alert('User account has been created successfully');
+  });
+
+  function resetAccount(){
+    [regUser, regPass, regConfirm].forEach(el=>{ el.value=''; el.classList.remove('invalid','valid'); });
+    ['regUserErr','regPassErr','regConfirmErr'].forEach(id=>$('#'+id).style.display='none');
+    touchedRU=touchedRP=touchedRC=false;
+    createBtn.disabled=true;
+  }
+
+  /* init */
+  (function init(){
+    // default states
+    accountValidate(false);
+    function toggleAdd(){ addBtn.disabled = comment.value.trim()===''; }
+    toggleAdd();
+    loginValidate(false);
+  })();
 </script>
-
 </body>
 </html>

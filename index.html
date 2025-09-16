@@ -7,194 +7,297 @@
 <style>
   body {
     font-family: Arial, sans-serif;
+    margin: 0;
     background: #f5f5f5;
+  }
+
+  /* Tabs buttons */
+  .tabs {
+    display: flex;
+    background: #444;
+  }
+  .tabs button {
+    flex: 1;
+    padding: 12px;
+    color: #fff;
+    background: #444;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .tabs button.active {
+    background: #666;
+  }
+
+  /* Main container */
+  .container {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 50px;
+    padding: 20px;
   }
-  .card {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    width: 400px;
+
+  /* Card style for windows */
+  .window {
+    background: #fff;
+    padding: 20px;
+    width: 900px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 8px;
     display: none;
   }
-  .card.active {
+  .window.active {
     display: block;
   }
-  h2 {
-    margin-bottom: 20px;
-    text-align: center;
+
+  /* Login form */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: auto;
   }
-  label {
-    display: inline-block;
-    width: 100px;
-    margin-bottom: 10px;
-    vertical-align: top;
+  .login-form label {
+    margin: 10px 0 4px 0;
   }
-  input, select, textarea {
-    width: 260px;
-    padding: 7px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+  .login-form input[type="text"],
+  .login-form input[type="password"] {
+    padding: 8px;
+    font-size: 14px;
+    width: 100%;
     box-sizing: border-box;
   }
-  button {
-    padding: 10px 20px;
-    margin-right: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #6c63ff;
-    color: white;
+  .login-form .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+  }
+  .login-form button {
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 8px;
     cursor: pointer;
   }
-  button:hover {
-    background-color: #5848c2;
+
+  /* Create Report layout */
+  .report-layout {
+    display: flex;
+    flex-direction: column;
   }
-  .tab-buttons {
-    margin-bottom: 15px;
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
   }
-  .tab-buttons button {
-    background-color: #eee;
-    color: #333;
+  .summary-row label {
+    width: 100px;
+    font-weight: bold;
   }
-  .tab-buttons button.active {
-    background-color: #6c63ff;
-    color: white;
+  .summary-row input {
+    flex: 1;
+    padding: 6px;
   }
-  .tab-content {
-    display: none;
+
+  .tabs-content {
+    display: flex;
+    gap: 20px;
   }
-  .tab-content.active {
-    display: block;
+
+  .details, .comments {
+    flex: 1;
+  }
+
+  .details-left, .details-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .details-left label, .details-right label {
+    font-weight: bold;
+  }
+  .details-left input, .details-left select,
+  .details-right input {
+    padding: 6px;
+    margin-top: 2px;
+    margin-bottom: 6px;
+  }
+
+  .description {
+    margin-top: 10px;
+  }
+  .description textarea {
+    width: 100%;
+    height: 120px;
+    padding: 6px;
+  }
+
+  .comments textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+  .all-comments textarea {
+    width: 100%;
+    height: 120px;
+  }
+
+  .report-buttons {
+    margin-top: 10px;
+  }
+  .report-buttons button {
+    padding: 8px 16px;
+    margin-right: 10px;
   }
 </style>
 </head>
 <body>
 
-<!-- Login Window -->
-<div id="login" class="card active">
-  <h2>Login</h2>
-  <div>
-    <label>User Name:</label>
-    <input type="text" placeholder="Enter username">
-  </div>
-  <div>
-    <label>Password:</label>
-    <input type="password" placeholder="Enter password">
-  </div>
-  <button onclick="showWindow('report')">Login</button>
-  <button onclick="showWindow('account')">Create Account</button>
+<div class="tabs">
+  <button class="tab-btn active" onclick="showWindow('loginWindow')">Login</button>
+  <button class="tab-btn" onclick="showWindow('createReportWindow')">Create Report</button>
 </div>
 
-<!-- Create Account Window -->
-<div id="account" class="card">
-  <h2>Create Account</h2>
-  <div>
-    <label>User Name:</label>
-    <input type="text" placeholder="Enter username">
-  </div>
-  <div>
-    <label>Password:</label>
-    <input type="password" placeholder="Enter password">
-  </div>
-  <div>
-    <label>Confirm Password:</label>
-    <input type="password" placeholder="Confirm password">
-  </div>
-  <button onclick="showWindow('login')">Back to Login</button>
-  <button>Create Account</button>
-</div>
+<div class="container">
 
-<!-- Create Report Window -->
-<div id="report" class="card">
-  <h2>Create Report</h2>
-  <div class="tab-buttons">
-    <button class="active" onclick="showTab('details', this)">Details</button>
-    <button onclick="showTab('comments', this)">Comments</button>
+  <!-- Login Window -->
+  <div class="window active" id="loginWindow">
+    <form class="login-form">
+      <label for="username">User Name:</label>
+      <input type="text" id="username">
+
+      <label for="password">Password:</label>
+      <input type="password" id="password">
+
+      <div class="options">
+        <label><input type="checkbox"> Keep me signed in</label>
+      </div>
+
+      <div class="report-buttons">
+        <button type="button">Login</button>
+        <button type="button">Cancel</button>
+      </div>
+    </form>
   </div>
-  <div id="details" class="tab-content active">
-    <div>
-      <label>Summary:</label>
-      <input type="text">
-    </div>
-    <div>
-      <label>Project:</label>
-      <select>
-        <option value="">Select</option>
-        <option>Start_Up</option>
-        <option>Testing_Project</option>
-      </select>
-    </div>
-    <div>
-      <label>Issue Type:</label>
-      <select>
-        <option value="">Select</option>
-        <option>Bug</option>
-        <option>Task</option>
-      </select>
-    </div>
-    <div>
-      <label>Priority:</label>
-      <select>
-        <option value="">Select</option>
-        <option>Critical</option>
-        <option>Major</option>
-        <option>Medium</option>
-        <option>Low</option>
-      </select>
-    </div>
-    <div>
-      <label>Affect Version:</label>
-      <input type="text">
-    </div>
-    <div>
-      <label>Fixed Version:</label>
-      <input type="text">
-    </div>
-    <div>
-      <label>Due Date:</label>
-      <input type="date">
-    </div>
-    <div>
-      <label>Assignee:</label>
-      <select>
-        <option value="">Select</option>
-        <option>User1</option>
-        <option>User2</option>
-      </select>
-    </div>
-    <div>
-      <button onclick="showWindow('login')">Close</button>
-      <button>Save Report</button>
+
+  <!-- Create Report Window -->
+  <div class="window" id="createReportWindow">
+    <div class="report-layout">
+
+      <!-- Summary row -->
+      <div class="summary-row">
+        <label for="summary">Summary:</label>
+        <input type="text" id="summary" value="Summary goes here">
+      </div>
+
+      <!-- Tabs for Details/Comments -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('details')">Details</button>
+        <button class="tab-btn" onclick="showTab('comments')">Comments</button>
+      </div>
+
+      <div class="tabs-content">
+        <!-- Details tab -->
+        <div class="details tab-content active" id="details">
+          <div style="display:flex; gap:20px;">
+            <!-- Left side fields -->
+            <div class="details-left">
+              <label>Project:</label>
+              <select>
+                <option>Start_Up</option>
+              </select>
+
+              <label>Issue Type:</label>
+              <select>
+                <option>Select</option>
+              </select>
+
+              <label>Priority:</label>
+              <select>
+                <option>Select</option>
+              </select>
+
+              <label>Affect Version:</label>
+              <input type="text" value="1232">
+
+              <label>Fixed Version:</label>
+              <input type="text" value="2123">
+
+              <label>Due Date:</label>
+              <input type="date">
+            </div>
+
+            <!-- Right side fields -->
+            <div class="details-right">
+              <label>Reporter:</label>
+              <input type="text">
+
+              <label>Assignee:</label>
+              <input type="text">
+
+              <label>Severity:</label>
+              <input type="text">
+
+              <label>Environment:</label>
+              <input type="text">
+
+              <label>Status:</label>
+              <input type="text" value="New">
+            </div>
+          </div>
+
+          <!-- Description field -->
+          <div class="description">
+            <label>Description:</label>
+            <textarea></textarea>
+          </div>
+
+          <!-- Buttons -->
+          <div class="report-buttons">
+            <button type="button">Save Report</button>
+            <button type="button">Close</button>
+          </div>
+        </div>
+
+        <!-- Comments tab -->
+        <div class="comments tab-content" id="comments">
+          <label>Comment:</label>
+          <textarea></textarea>
+
+          <label>All Comments:</label>
+          <div class="all-comments">
+            <textarea readonly></textarea>
+          </div>
+
+          <div class="report-buttons">
+            <button type="button">Add Comment</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div id="comments" class="tab-content">
-    <div>
-      <label>Comment:</label>
-      <textarea rows="4"></textarea>
-    </div>
-    <div>
-      <button onclick="showTab('details', document.querySelector('.tab-buttons button'))">Back to Details</button>
-      <button>Add Comment</button>
-    </div>
-  </div>
+
 </div>
 
 <script>
-function showWindow(id) {
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function showTab(tabId, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+  function showWindow(windowId) {
+    document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+    document.getElementById(windowId).classList.add('active');
+
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    if(windowId === 'loginWindow') document.querySelector('.tabs button').classList.add('active');
+    else document.querySelectorAll('.tabs button')[1].classList.add('active');
+  }
+
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+    if(tabId === 'details') document.querySelectorAll('.tabs button')[0].classList.add('active');
+    else document.querySelectorAll('.tabs button')[1].classList.add('active');
+  }
 </script>
 
 </body>

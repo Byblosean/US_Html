@@ -1,283 +1,133 @@
-<!doctype html>
-<html lang="uk">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bug Tracker — UI Mockups</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bug Tracker UI</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--muted:#94a3b8;--accent:#6c63ff;--surface:#0b1220;--glass:rgba(255,255,255,0.03);--radius:12px}
-    *{box-sizing:border-box}
-    body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; margin:0;background:linear-gradient(180deg,#071021 0%, #081426 60%);color:#e6eef8;min-height:100vh}
-    .wrap{max-width:1100px;margin:32px auto;padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    h1{font-size:20px;margin:0}
-    nav a{color:var(--muted);text-decoration:none;margin-left:12px;padding:8px 12px;border-radius:8px}
-    nav a.active{background:var(--glass);color:#fff}
-    .grid{display:grid;grid-template-columns:1fr 360px;gap:20px}
-    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    form .row{display:flex;gap:12px;margin-bottom:12px}
-    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-    input[type=text], input[type=password], textarea, select, input[type=date]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
-    textarea{min-height:120px;resize:vertical}
-    .controls{display:flex;gap:10px;align-items:center}
-    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-    .small{font-size:12px;color:var(--muted)}
-    .hint{font-size:12px;color:var(--muted);margin-top:6px}
-    .right-panel{position:sticky;top:24px}
-    .readonly{opacity:0.9;background:rgba(255,255,255,0.012)}
-    .tabs{display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,0.03);padding-bottom:8px;margin-bottom:12px}
-    .tab{padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
-    .tab.active{background:rgba(255,255,255,0.02);color:#fff}
-    .comments-box{height:180px;overflow:auto;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent}
-    footer{margin-top:18px;color:var(--muted);font-size:12px}
-    /* responsive */
-    @media(max-width:920px){.grid{grid-template-columns:1fr;}.right-panel{position:static}}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      align-items: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 400px;
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      width: 120px;
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background: #3498db;
+      color: #fff;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Bug Tracker — UI Mockups</h1>
-      <nav>
-        <a href="#login" class="active">Login</a>
-        <a href="#create-report">Create Report</a>
-        <a href="#create-account">Create Account</a>
-      </nav>
-    </header>
 
-    <!-- LOGIN -->
-    <section id="login" class="card" style="margin-bottom:16px">
-      <h2 style="margin:0 0 12px 0">Вхід в Баг Трекер (Login to Bug Tracker)</h2>
-      <div class="grid">
-        <div>
-          <form aria-label="Login form">
-            <div class="row">
-              <div style="flex:1">
-                <label for="username">Ім’я користувача (User Name)</label>
-                <input id="username" type="text" maxlength="50" placeholder="Enter user name" title="User Name (max 50 chars)" />
-                <div class="hint small">Обов’язкове поле • max 50 символів</div>
-              </div>
-            </div>
-            <div class="row">
-              <div style="flex:1">
-                <label for="password">Пароль (Password)</label>
-                <input id="password" type="password" maxlength="128" placeholder="Enter password" title="Password (min 12 chars)" />
-                <div class="hint small">Обов’язкове поле • відображається як ●</div>
-              </div>
-            </div>
-
-            <div class="row" style="align-items:center;justify-content:space-between">
-              <div style="display:flex;align-items:center;gap:8px">
-                <input id="remember" type="checkbox" />
-                <label for="remember" class="small">Запам’ятати мене (Keep me signed in)</label>
-              </div>
-              <div class="controls">
-                <button type="button" class="btn">Увійти (Login)</button>
-                <button type="button" class="btn secondary">Відмінити (Cancel)</button>
-              </div>
-            </div>
-          </form>
-        </div>
-        <aside class="card right-panel">
-          <h3 style="margin-top:0">Підказки</h3>
-          <p class="small">Tooltip для чекбоксу: <strong title="Check to remember the account">Keep me signed in</strong></p>
-          <p class="small">Тестовий акаунт: <code>TestAdmin / Password1@</code></p>
-        </aside>
-      </div>
-    </section>
-
-    <!-- CREATE REPORT -->
-    <section id="create-report" class="card" style="margin-bottom:16px">
-      <h2 style="margin:0 0 12px 0">Створити звіт (Create Report)</h2>
-      <div class="tabs">
-        <div class="tab active">Деталі (Details)</div>
-        <div class="tab">Коментарі (Comments)</div>
-      </div>
-      <div class="grid">
-        <div>
-          <form aria-label="Create report form">
-            <div class="row">
-              <div style="flex:1">
-                <label>Короткий опис (Summary) <span class="small">*</span></label>
-                <input type="text" maxlength="255" placeholder="Short summary" title="Summary" />
-                <div class="hint small">Обов’язкове поле • max 255 chars</div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Проект (Project) <span class="small">*</span></label>
-                <select title="Click to select Project">
-                  <option value="">-- Select project --</option>
-                  <option>Start_Up</option>
-                  <option>Testing_Project</option>
-                </select>
-              </div>
-              <div style="width:220px">
-                <label>Тип звіту (Issue Type) <span class="small">*</span></label>
-                <select>
-                  <option value="">-- Select type --</option>
-                  <option>Bug</option>
-                  <option>Task</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="width:220px">
-                <label>Пріоритет (Priority) <span class="small">*</span></label>
-                <select>
-                  <option value="">-- Select priority --</option>
-                  <option>Critical</option>
-                  <option>Major</option>
-                  <option>Medium</option>
-                  <option>Low</option>
-                </select>
-              </div>
-              <div style="flex:1">
-                <label>Пов’язана версія (Affect Version)</label>
-                <input type="text" maxlength="50" placeholder="e.g. 1.0.0" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Виправлена версія (Fixed Version)</label>
-                <input type="text" maxlength="50" placeholder="e.g. 1.0.1" />
-              </div>
-              <div style="width:220px">
-                <label>Кінцева дата (Due Date)</label>
-                <input type="date" />
-                <div class="hint small">Select a Date</div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Репортер (Reporter)</label>
-                <input type="text" readonly class="readonly" value="TestAdmin" />
-              </div>
-              <div style="width:220px">
-                <label>Уповноважений (Assignee)</label>
-                <select>
-                  <option value="">-- Select user --</option>
-                  <option>TestUser1</option>
-                  <option>TestUser2</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Severity</label>
-                <select>
-                  <option value="">-- Select severity --</option>
-                  <option>Critical</option>
-                  <option>Major</option>
-                  <option>Medium</option>
-                  <option>Low</option>
-                </select>
-              </div>
-              <div style="width:220px">
-                <label>Середовище (Environment)</label>
-                <select>
-                  <option value="">-- Select environment --</option>
-                  <option>SIT</option>
-                  <option>UAT</option>
-                  <option>PDN</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Статус (Status)</label>
-                <input type="text" readonly class="readonly" value="New" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Опис (Description)</label>
-                <textarea maxlength="10000" placeholder="Detailed description..."></textarea>
-              </div>
-            </div>
-
-            <div class="row" style="justify-content:flex-end">
-              <button type="button" class="btn">Зберегти звіт (Save Report)</button>
-              <button type="button" class="btn secondary">Закрити (Close)</button>
-            </div>
-          </form>
-        </div>
-
-        <aside class="card right-panel">
-          <h3 style="margin-top:0">Коментарі (Comments)</h3>
-          <div class="comments-box" aria-live="polite">
-            <!-- example comment -->
-            <div class="small">🡨Comment has been added by TestAdmin at 04.06.2014 13:02:56🡪 Test Comment</div>
-          </div>
-          <div style="margin-top:10px">
-            <label>Коментар (Comment)</label>
-            <textarea placeholder="Write a comment" rows="3"></textarea>
-            <div style="display:flex;gap:8px;margin-top:8px;justify-content:flex-end">
-              <button class="btn secondary">Додати коментар (Add Comment)</button>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- CREATE ACCOUNT -->
-    <section id="create-account" class="card">
-      <h2 style="margin:0 0 12px 0">Створити акаунт (Create Account)</h2>
-      <div class="grid">
-        <div>
-          <form aria-label="Create account form">
-            <div class="row">
-              <div style="flex:1">
-                <label>Ім’я користувача (User Name)</label>
-                <input type="text" maxlength="20" placeholder="Letters, digits, _ or - (12-20 chars)" title="User Name rules" />
-                <div class="hint small">The first character must be a letter. Length: 12–20.</div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Пароль (Password)</label>
-                <input type="password" maxlength="64" placeholder="Min 12 chars, mix of cases, number & special" />
-                <div class="hint small">Allowed special: !@#$%^&+=</div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div style="flex:1">
-                <label>Підтвердити пароль (Confirm Password)</label>
-                <input type="password" maxlength="64" placeholder="Repeat password" />
-              </div>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:10px">
-              <button class="btn">Зареєструватися (Create Account)</button>
-              <button class="btn secondary">Скасувати (Cancel)</button>
-            </div>
-          </form>
-        </div>
-
-        <aside class="card right-panel">
-          <h3 style="margin-top:0">Поради</h3>
-          <p class="small">Tooltip for username rules shown on hover.</p>
-          <p class="small">Password policy: min 12 chars, contain lower/upper/number/special</p>
-        </aside>
-      </div>
-    </section>
-
-    <footer class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div class="small">Mockup only — no backend logic included.</div>
-        <div class="small">Designed for review & testing</div>
-      </div>
-    </footer>
+  <!-- Login -->
+  <div class="card">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label for="login-username">User Name:</label>
+      <input type="text" id="login-username" name="username">
+    </div>
+    <div class="form-group">
+      <label for="login-password">Password:</label>
+      <input type="password" id="login-password" name="password">
+    </div>
+    <div class="form-group">
+      <label></label>
+      <input type="checkbox" id="remember">
+      <label for="remember">Remember account</label>
+    </div>
+    <button type="button">Login</button>
   </div>
+
+  <!-- Create Report -->
+  <div class="card">
+    <h2>Create Report</h2>
+    <div class="form-group">
+      <label for="report-title">Title:</label>
+      <input type="text" id="report-title" name="report-title">
+    </div>
+    <div class="form-group">
+      <label for="report-status">Status:</label>
+      <select id="report-status" name="report-status">
+        <option value="new" selected>New</option>
+        <option value="inprogress">In Progress</option>
+        <option value="done">Done</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="due-date">Due Date:</label>
+      <input type="date" id="due-date" name="due-date">
+    </div>
+    <div class="form-group">
+      <label for="comments">Comments:</label>
+      <textarea id="comments" rows="4"></textarea>
+    </div>
+    <button type="button">Submit Report</button>
+  </div>
+
+  <!-- Create Account -->
+  <div class="card">
+    <h2>Create Account</h2>
+    <div class="form-group">
+      <label for="ca-username">User Name:</label>
+      <input type="text" id="ca-username" name="ca-username">
+    </div>
+    <div class="form-group">
+      <label for="ca-password">Password:</label>
+      <input type="password" id="ca-password" name="ca-password">
+    </div>
+    <div class="form-group">
+      <label for="ca-confirm">Confirm:</label>
+      <input type="password" id="ca-confirm" name="ca-confirm">
+    </div>
+    <button type="button">Create Account</button>
+  </div>
+
 </body>
 </html>
